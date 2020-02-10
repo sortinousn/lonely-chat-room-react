@@ -3,15 +3,30 @@ import "./App.css";
 
 function Chat({ chat, index, removeChat }) {
   let chatPeople = ["me", "myself", "I"];
+  const [joke, setJoke] = useState("");
 
   function random_reply(chatPeople) {
     return chatPeople[Math.floor(Math.random() * chatPeople.length)];
   }
 
+  const feelingLonely = () => {
+    fetch("https://api.icndb.com/jokes/random")
+      .then(response => {
+        return response.json();
+      })
+      .then(myJson => {
+        setJoke(myJson.value.joke);
+        console.log(myJson.value.joke);
+      });
+  };
+
   return (
     <div className="chat">
+      <button onClick={() => feelingLonely()}>Feeling Lonely</button>
+
       <div>{random_reply(chatPeople)}</div>
       {chat.text}
+      {joke}
 
       <div>
         <button onClick={() => removeChat(index)}>x</button>
@@ -59,16 +74,6 @@ function App() {
     setChats(newChats);
   };
 
-  const feelingLonely = () => {
-    fetch("https://api.icndb.com/jokes/random")
-      .then(response => {
-        return response.json();
-      })
-      .then(myJson => {
-        console.log(myJson.value.joke);
-      });
-  };
-
   return (
     <div className="app">
       <h1>The Lonely Chat Room - Using React Hooks!</h1>
@@ -77,7 +82,6 @@ function App() {
           <Chat key={index} index={index} chat={chat} removeChat={removeChat} />
         ))}
         <ChatForm addChat={addChat} />
-        <button onClick={() => feelingLonely()}>Feeling Lonely</button>
       </div>
     </div>
   );
